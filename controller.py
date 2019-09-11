@@ -17,6 +17,10 @@ class Controller(VectorSystem):
 
     def DoCalcVectorOutput(self, context, x, _, u):
 
+        # # check on which side the slider is
+        # tol = 1.e-3
+        # theta_sign = 1 if np.linalg.norm(x[1:3]) < tol else -1
+
         # extract positions from state
         pos_p = x[7:9]
         pos_s = np.concatenate([x[4:6],[2*np.arctan2(x[3], x[0])]])
@@ -34,23 +38,23 @@ class Controller(VectorSystem):
             u[:] = self.pusher_pd(pos_p, pos_p, vel_p)
             return
 
-        # ensure that slider is still
-        tol = 1.e0
-        still = np.linalg.norm(vel_s) < tol
-
-        # block pusher if not still
-        if not still:
-            u[:] = self.pusher_pd(pos_p, pos_p, vel_p)
-            return
-
         # express pusher position in slider frame
         pos_ps, R = self.pusher_in_slider_frame(pos_p, pos_s)
 
         # detect contact
         contact, facet = self.detect_contact(pos_ps)
 
-        # approach slider
+        # check if the slider is still
+        tol = 1.e-1
+        still = np.linalg.norm(vel_s) < tol
+
+        # block pusher if no contact and slider is moving
         if not contact:
+            if not still:
+                u[:] = self.pusher_pd(pos_p, pos_p, vel_p)
+                return
+
+            # if slider is still,approach pusher
             pos_p_des = self.get_pushing_point(error, facet, R, pos_s)
             u[:] = self.pusher_pd(pos_p_des, pos_p, vel_p)
 
@@ -98,8 +102,8 @@ class Controller(VectorSystem):
     def pusher_pd(self, pos_p_des, pos_p, vel_p):
 
         # control gains for stabilizing pusher
-        kp = 10
-        kd = 1
+        kp = 1
+        kd = .3
 
         return - kp * (pos_p-pos_p_des) - kd * vel_p
 
@@ -136,7 +140,7 @@ class Controller(VectorSystem):
         # force_magnitude = kp * error + kd * td
 
         # just use constant force to overcome friction
-        force_magnitude = 10
+        force_magnitude = 8
 
         facet_angle = t + facet * np.pi/2
         u = - force_magnitude * np.array([np.cos(facet_angle), np.sin(facet_angle)])
