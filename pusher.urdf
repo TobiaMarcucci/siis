@@ -1,0 +1,65 @@
+<?xml version="1.0" ?>
+
+<robot name="pusher">
+
+  <link name="pusher_link">
+
+    <inertial>
+      <origin xyz="0 0 .1" rpy="0 0 0"/>
+      <mass value=".01"/>
+      <inertia ixx="1" iyy="1" izz="1" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 .1" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius=".1" />
+      </geometry>
+      <material name="blue">
+        <color rgba="0 0 1 1" />
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 .1" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius=".1" />
+      </geometry>
+    </collision>
+
+  </link>
+
+  <link name="pusher_x" />
+  <link name="pusher_y" />
+
+  <joint name="pusher_x" type="prismatic">
+
+    <parent link="pusher_x"/>
+    <child link="pusher_y"/>
+    <axis xyz="1 0 0"/>
+
+  </joint>
+
+  <joint name="pusher_y" type="prismatic">
+
+    <parent link="pusher_y"/>
+    <child link="pusher_link"/>
+    <axis xyz="0 1 0"/>
+
+  </joint>
+
+  <transmission type="SimpleTransmission" name="pusher_x">
+
+    <actuator name="pusher_x" />
+    <joint name="pusher_x" />
+
+  </transmission>
+
+  <transmission type="SimpleTransmission" name="pusher_y">
+
+    <actuator name="pusher_y" />
+    <joint name="pusher_y" />
+
+  </transmission>
+
+</robot>

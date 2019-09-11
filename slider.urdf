@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+
+<robot name="slider">
+
+  <link name="slider_link">
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1"/>
+      <inertia ixx=".09" iyy=".09" izz=".15" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="1 1 .2" />
+      </geometry>
+      <material name="red">
+        <color rgba="1 0 0 1" />
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="1 1 .2" />
+      </geometry>
+    </collision>
+
+  </link>
+
+</robot>
